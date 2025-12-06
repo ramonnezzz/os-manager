@@ -1,10 +1,10 @@
 import {
   createContext,
   useContext,
-  useState,
 } from "react";
 import type { ReactNode } from "react";
 import type { Orcamento, StatusOrcamento } from "../types/orcamento";
+import { usePersistentState } from "../hooks/usePersistentState";
 
 interface OrcamentoContextType {
   listaOrcamentos: Orcamento[];
@@ -21,7 +21,10 @@ interface OrcamentoProviderProps {
 }
 
 export function OrcamentoProvider({ children }: OrcamentoProviderProps) {
-  const [listaOrcamentos, setListaOrcamentos] = useState<Orcamento[]>([]);
+  const [listaOrcamentos, setListaOrcamentos] = usePersistentState<Orcamento[]>(
+    "orcamentos-lista",
+    []
+  );
 
   function adicionarOrcamento(novo: Orcamento) {
     setListaOrcamentos((anterior) => [...anterior, novo]);
@@ -44,9 +47,6 @@ export function OrcamentoProvider({ children }: OrcamentoProviderProps) {
   );
 }
 
-/**
- * Hook de conveniência para consumir o contexto de Orçamentos.
- */
 export function useOrcamentos() {
   const context = useContext(OrcamentoContext);
   if (!context) {

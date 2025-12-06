@@ -1,11 +1,10 @@
 import {
   createContext,
   useContext,
-  useState,
 } from "react";
 import type { ReactNode } from "react";
-import type { OrdemServico } from "../types/ordemServico";
-import type { StatusOS } from "../types/ordemServico";
+import type { OrdemServico, StatusOS } from "../types/ordemServico";
+import { usePersistentState } from "../hooks/usePersistentState";
 
 interface OSContextType {
   listaOS: OrdemServico[];
@@ -20,7 +19,10 @@ interface OSProviderProps {
 }
 
 export function OSProvider({ children }: OSProviderProps) {
-  const [listaOS, setListaOS] = useState<OrdemServico[]>([]);
+  const [listaOS, setListaOS] = usePersistentState<OrdemServico[]>(
+    "os-lista",
+    []
+  );
 
   function adicionarOS(novaOS: OrdemServico) {
     setListaOS((anterior) => [...anterior, novaOS]);
@@ -43,16 +45,10 @@ export function OSProvider({ children }: OSProviderProps) {
   );
 }
 
-/**
- * Hook de conveniência para consumir o contexto de OS.
- * Garante que só seja usado dentro do OSProvider.
- */
 export function useOS() {
   const context = useContext(OSContext);
   if (!context) {
-    throw new Error(
-      "useOS deve ser usado dentro de um OSProvider"
-    );
+    throw new Error("useOS deve ser usado dentro de um OSProvider");
   }
   return context;
 }
