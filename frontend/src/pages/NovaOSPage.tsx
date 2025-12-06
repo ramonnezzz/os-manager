@@ -1,4 +1,4 @@
-// src/pages/NovaOSPage.tsx
+// src/pages/NovaOSPage.ts
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
