@@ -1,22 +1,22 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useOrcamentos } from "../context/OrcamentoContext";
 import type { FormEvent } from "react";
-import type { Cliente } from "../types/cliente";
+import { useNavigate, Link } from "react-router-dom";
+import { useOrcamentos } from "../context/OrcamentoContext";
+import { useClientes } from "../context/ClienteContext";
 import type { Orcamento, OrcamentoItem } from "../types/orcamento";
 
 interface ItemForm {
   descricao: string;
-  quantidade: string;     // mantemos como string no form
-  valorUnitario: string;  // e convertemos na hora do submit
+  quantidade: string;     // string no form
+  valorUnitario: string;  // convertemos no submit
 }
 
 export function NovoOrcamentoPage() {
   const { adicionarOrcamento } = useOrcamentos();
+  const { listaClientes } = useClientes();
   const navigate = useNavigate();
 
-  const [nomeCliente, setNomeCliente] = useState("");
-  const [telefoneCliente, setTelefoneCliente] = useState("");
+  const [clienteIdSelecionado, setClienteIdSelecionado] = useState("");
   const [validadeDias, setValidadeDias] = useState("7");
   const [observacoes, setObservacoes] = useState("");
   const [itens, setItens] = useState<ItemForm[]>([
@@ -24,6 +24,8 @@ export function NovoOrcamentoPage() {
   ]);
 
   const [erro, setErro] = useState<string | null>(null);
+
+  const semClientes = listaClientes.length === 0;
 
   function atualizarItem(index: number, campo: keyof ItemForm, valor: string) {
     setItens((anteriores) =>
@@ -48,8 +50,22 @@ export function NovoOrcamentoPage() {
     event.preventDefault();
     setErro(null);
 
-    if (!nomeCliente.trim()) {
-      setErro("Informe o nome do cliente.");
+    if (semClientes) {
+      setErro("Cadastre ao menos um cliente antes de criar um orçamento.");
+      return;
+    }
+
+    if (!clienteIdSelecionado) {
+      setErro("Selecione um cliente.");
+      return;
+    }
+
+    const cliente = listaClientes.find(
+      (cli) => cli.id === clienteIdSelecionado
+    );
+
+    if (!cliente) {
+      setErro("Cliente selecionado não encontrado.");
       return;
     }
 
@@ -64,16 +80,7 @@ export function NovoOrcamentoPage() {
 
     const timestamp = Date.now();
     const ano = new Date().getFullYear();
-
-    const clienteId = `cli-${timestamp}`;
     const orcamentoId = `orc-${timestamp}`;
-
-    const cliente: Cliente = {
-      id: clienteId,
-      nome: nomeCliente.trim(),
-      tipoPessoa: "PF",
-      telefone: telefoneCliente.trim() || undefined,
-    };
 
     const validadeNumero = Number(validadeDias || "0") || 0;
 
@@ -102,7 +109,7 @@ export function NovoOrcamentoPage() {
     const novoOrcamento: Orcamento = {
       id: orcamentoId,
       numero: `ORC-${ano}-${timestamp}`,
-      cliente,
+      cliente, // usa cliente cadastrado
       dataEmissao: new Date().toISOString(),
       validadeDias: validadeNumero || 7,
       status: "Emitido",
@@ -113,14 +120,13 @@ export function NovoOrcamentoPage() {
 
     adicionarOrcamento(novoOrcamento);
 
-    // limpa o formulário
-    setNomeCliente("");
-    setTelefoneCliente("");
+    // limpa form
+    setClienteIdSelecionado("");
     setValidadeDias("7");
     setObservacoes("");
     setItens([{ descricao: "", quantidade: "1", valorUnitario: "" }]);
 
-    // redireciona para a lista de orçamentos
+    // vai pra listagem de orçamentos
     navigate("/orcamentos");
   }
 
@@ -132,10 +138,28 @@ export function NovoOrcamentoPage() {
     return acc + quantidadeNum * valorUnitarioNum;
   }, 0);
 
+  if (semClientes) {
+    return (
+      <div>
+        <h1>Novo Orçamento</h1>
+        <p style={{ marginTop: "1rem" }}>
+          Você ainda não possui clientes cadastrados.
+        </p>
+        <p style={{ marginTop: "0.5rem" }}>
+          Vá até a página{" "}
+          <Link to="/clientes" style={{ color: "#4e8cff" }}>
+            Clientes
+          </Link>{" "}
+          para cadastrar ao menos um cliente antes de criar um orçamento.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1>Novo Orçamento</h1>
-      <p>Cadastre um novo orçamento preenchendo os dados abaixo.</p>
+      <p>Selecione um cliente cadastrado e adicione os itens do orçamento.</p>
 
       <form
         onSubmit={handleSubmit}
@@ -161,16 +185,21 @@ export function NovoOrcamentoPage() {
           </div>
         )}
 
-        {/* Dados do cliente */}
-        <section style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        {/* Cliente + validade */}
+        <section
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.75rem",
+          }}
+        >
           <div>
             <label style={{ display: "block", marginBottom: "0.25rem" }}>
-              Nome do cliente *
+              Cliente *
             </label>
-            <input
-              type="text"
-              value={nomeCliente}
-              onChange={(e) => setNomeCliente(e.target.value)}
+            <select
+              value={clienteIdSelecionado}
+              onChange={(e) => setClienteIdSelecionado(e.target.value)}
               required
               style={{
                 width: "100%",
@@ -180,26 +209,14 @@ export function NovoOrcamentoPage() {
                 backgroundColor: "#181818",
                 color: "#f5f5f5",
               }}
-            />
-          </div>
-
-          <div>
-            <label style={{ display: "block", marginBottom: "0.25rem" }}>
-              Telefone do cliente
-            </label>
-            <input
-              type="tel"
-              value={telefoneCliente}
-              onChange={(e) => setTelefoneCliente(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "0.5rem 0.75rem",
-                borderRadius: "4px",
-                border: "1px solid #333",
-                backgroundColor: "#181818",
-                color: "#f5f5f5",
-              }}
-            />
+            >
+              <option value="">Selecione um cliente</option>
+              {listaClientes.map((cli) => (
+                <option key={cli.id} value={cli.id}>
+                  {cli.nome} {cli.cidade ? `- ${cli.cidade}` : ""}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -225,7 +242,13 @@ export function NovoOrcamentoPage() {
         </section>
 
         {/* Itens do orçamento */}
-        <section style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        <section
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.75rem",
+          }}
+        >
           <h2 style={{ fontSize: "1.1rem" }}>Itens</h2>
 
           {itens.map((item, index) => (
@@ -330,7 +353,13 @@ export function NovoOrcamentoPage() {
         </section>
 
         {/* Observações e total */}
-        <section style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        <section
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.75rem",
+          }}
+        >
           <div>
             <label style={{ display: "block", marginBottom: "0.25rem" }}>
               Observações
