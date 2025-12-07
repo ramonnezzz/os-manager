@@ -39,7 +39,9 @@ export function DocumentoOSPage() {
         padding: "1.5rem 0",
       }}
     >
+      {/* IMPORTANTE: className="print-page" aqui também */}
       <div
+        className="print-page"
         style={{
           width: "100%",
           maxWidth: "800px",

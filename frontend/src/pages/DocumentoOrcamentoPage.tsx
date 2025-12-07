@@ -1,4 +1,3 @@
-// src/pages/DocumentoOrcamentoPage.tsx
 import { useNavigate, useParams } from "react-router-dom";
 import { useOrcamentos } from "../context/OrcamentoContext";
 import { useEmpresa } from "../context/EmpresaContext";
@@ -54,7 +53,9 @@ export function DocumentoOrcamentoPage() {
         justifyContent: "center",
       }}
     >
+      {/* IMPORTANTE: className="print-page" para ajustar no @media print */}
       <div
+        className="print-page"
         style={{
           width: "100%",
           maxWidth: "800px",
@@ -63,7 +64,7 @@ export function DocumentoOrcamentoPage() {
           boxShadow: "0 0 10px rgba(0,0,0,0.08)",
         }}
       >
-        {/* barra de ações */}
+        {/* barra de ações - className="no-print" para sumir no PDF */}
         <div
           className="no-print"
           style={{

@@ -86,3 +86,24 @@ p {
     padding: 2rem 1.5rem 2rem;
   }
 }
+/* ===== Layout de impressão (PDF) ===== */
+@media print {
+  /* tira fundo escuro do app */
+  body {
+    background: #ffffff !important;
+  }
+
+  /* esconde qualquer coisa marcada como "no-print" */
+  .no-print {
+    display: none !important;
+  }
+
+  /* container do documento ajustado à página */
+  .print-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+}
