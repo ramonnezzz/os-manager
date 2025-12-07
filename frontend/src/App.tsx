@@ -5,6 +5,7 @@ import { NovaOSPage } from "./pages/NovaOSPage";
 import { NovoOrcamentoPage } from "./pages/NovoOrcamentoPage";
 import { ListaOSPage } from "./pages/ListaOSPage";
 import { ListaOrcamentosPage } from "./pages/ListaOrcamentosPage";
+import { ListaClientesPage } from "./pages/ListaClientesPage"; // <- novo import
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/novo-orcamento" element={<NovoOrcamentoPage />} />
           <Route path="/os" element={<ListaOSPage />} />
           <Route path="/orcamentos" element={<ListaOrcamentosPage />} />
+          <Route path="/clientes" element={<ListaClientesPage />} /> {/* nova rota */}
         </Routes>
       </main>
     </BrowserRouter>
