@@ -10,6 +10,7 @@ import { ListaClientesPage } from "./pages/ListaClientesPage";
 import { DetalheOSPage } from "./pages/DetalheOSPage";
 import { DetalheOrcamentoPage } from "./pages/DetalheOrcamentoPage";
 import { DocumentoOrcamentoPage } from "./pages/DocumentoOrcamentoPage";
+import { DocumentoOSPage } from "./pages/DocumentoOSPage";
 
 function App() {
   const location = useLocation();
@@ -80,6 +81,7 @@ function App() {
           <Route path="/nova-os" element={<NovaOSPage />} />
           <Route path="/os" element={<ListaOSPage />} />
           <Route path="/os/:id" element={<DetalheOSPage />} />
+          <Route path="/os/:id/documento" element={<DocumentoOSPage />} />
 
           {/* Orçamentos */}
           <Route path="/novo-orcamento" element={<NovoOrcamentoPage />} />

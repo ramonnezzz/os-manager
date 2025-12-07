@@ -1,9 +1,7 @@
-// src/pages/DetalheOSPage.tsx
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { CSSProperties } from "react";
 import { useOS } from "../context/OSContext";
-
 
 export type StatusOS = "Aberta" | "Em andamento" | "Concluída" | "Cancelada";
 
@@ -119,6 +117,10 @@ export function DetalheOSPage() {
     });
 
     setEmEdicao(false);
+  }
+
+  function handleAbrirDocumento() {
+    navigate(`/os/${os.id}/documento`);
   }
 
   return (
@@ -307,18 +309,18 @@ export function DetalheOSPage() {
             </button>
             <button
               type="button"
-              disabled
+              onClick={handleAbrirDocumento}
               style={{
                 flex: 1,
                 padding: "0.55rem 0.9rem",
                 borderRadius: "8px",
-                border: "1px solid #444",
-                backgroundColor: "#222",
-                color: "#888",
-                cursor: "not-allowed",
+                border: "1px solid #4e8cff",
+                backgroundColor: "transparent",
+                color: "#c8ddff",
+                cursor: "pointer",
               }}
             >
-              Documentos (em breve)
+              Documento / Imprimir OS
             </button>
           </>
         )}
