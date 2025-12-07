@@ -21,29 +21,25 @@ export interface OSItem {
 
 export interface OrdemServico {
   id: string;
-  numero: string; // ex: "OS-2025-0001"
+  numero: string;
   cliente: Cliente;
-
   dataAbertura: string;
-  dataPrevistaConclusao?: string;
-  dataConclusao?: string;
-
   status: StatusOS;
-
-  equipamento?: string;
-  serieOuEtiqueta?: string;
-  senhaAcesso?: string;
-
+  equipamento: string;
   defeitoRelatado?: string;
-  diagnosticoTecnico?: string;
-  servicoExecutado?: string;
 
-  observacoes?: string;
+  /** Campo de texto livre com contexto geral da OS */
+  observacoesGerais?: string;
 
-  valorMaoDeObra?: number;
-  valorProdutos?: number;
-  desconto?: number;
+  /** Campo para laudo técnico resumido */
+  laudoTecnico?: string;
+
+  /** Campo para solução aplicada */
+  solucao?: string;
+
+  valorMaoDeObra: number;
+  valorProdutos: number;
+  desconto: number;
   total: number;
-
   itens: OSItem[];
 }

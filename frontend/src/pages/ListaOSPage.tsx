@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useOS } from "../context/OSContext";
+import { Link } from "react-router-dom";
 
 export function ListaOSPage() {
   const { listaOS } = useOS();
@@ -44,8 +45,9 @@ export function ListaOSPage() {
       };
     }
 
-    if (status.toLowerCase().includes("pend")
-      || status.toLowerCase().includes("abert")
+    if (
+      status.toLowerCase().includes("pend") ||
+      status.toLowerCase().includes("abert")
     ) {
       return {
         backgroundColor: "#332516",
@@ -187,101 +189,109 @@ export function ListaOSPage() {
                 <li
                   key={os.id}
                   style={{
-                    padding: "0.75rem 0.9rem",
                     borderRadius: "10px",
                     border: "1px solid #333",
                     backgroundColor: "#181818",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    gap: "0.75rem",
                   }}
                 >
-                  <div
+                  <Link
+                    to={`/os/${os.id}`}
                     style={{
                       display: "flex",
-                      flexDirection: "column",
-                      gap: "0.2rem",
-                      minWidth: 0,
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                      padding: "0.75rem 0.9rem",
+                      textDecoration: "none",
+                      color: "inherit",
                     }}
                   >
-                    {/* Número da OS */}
-                    <span
+                    <div
                       style={{
-                        fontWeight: 600,
-                        fontSize: "0.95rem",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.2rem",
+                        minWidth: 0,
                       }}
                     >
-                      {os.numero}
-                    </span>
+                      {/* Número da OS */}
+                      <span
+                        style={{
+                          fontWeight: 600,
+                          fontSize: "0.95rem",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {os.numero}
+                      </span>
 
-                    {/* Cliente */}
-                    <span
-                      style={{
-                        fontSize: "0.9rem",
-                        opacity: 0.9,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {os.cliente.nome}
-                    </span>
+                      {/* Cliente */}
+                      <span
+                        style={{
+                          fontSize: "0.9rem",
+                          opacity: 0.9,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {os.cliente.nome}
+                      </span>
 
-                    {/* Data + equipamento */}
-                    <span
-                      style={{
-                        fontSize: "0.8rem",
-                        opacity: 0.7,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {new Date(os.dataAbertura).toLocaleDateString(
-                        "pt-BR"
-                      )}{" "}
-                      · {os.equipamento}
-                    </span>
-                  </div>
+                      {/* Data + equipamento */}
+                      <span
+                        style={{
+                          fontSize: "0.8rem",
+                          opacity: 0.7,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {new Date(os.dataAbertura).toLocaleDateString(
+                          "pt-BR"
+                        )}{" "}
+                        · {os.equipamento}
+                      </span>
+                    </div>
 
-                  <div
-                    style={{
-                      textAlign: "right",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "0.25rem",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {/* Total */}
-                    <span
+                    <div
                       style={{
-                        fontWeight: 600,
-                        fontSize: "0.95rem",
+                        textAlign: "right",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.25rem",
+                        flexShrink: 0,
                       }}
                     >
-                      R$ {os.total.toFixed(2)}
-                    </span>
+                      {/* Total */}
+                      <span
+                        style={{
+                          fontWeight: 600,
+                          fontSize: "0.95rem",
+                        }}
+                      >
+                        R$ {os.total.toFixed(2)}
+                      </span>
 
-                    {/* Tag de status */}
-                    <span
-                      style={{
-                        fontSize: "0.75rem",
-                        padding: "0.15rem 0.6rem",
-                        borderRadius: "999px",
-                        borderWidth: "1px",
-                        borderStyle: "solid",
-                        textTransform: "capitalize",
-                        ...statusStyles,
-                      }}
-                    >
-                      {os.status}
-                    </span>
-                  </div>
+                      {/* Tag de status */}
+                      <span
+                        style={{
+                          fontSize: "0.75rem",
+                          padding: "0.15rem 0.6rem",
+                          borderRadius: "999px",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          textTransform: "capitalize",
+                          ...statusStyles,
+                        }}
+                      >
+                        {os.status}
+                      </span>
+                    </div>
+                  </Link>
                 </li>
               );
             })}
