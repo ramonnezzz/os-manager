@@ -241,6 +241,22 @@ export function DetalheOrcamentoPage() {
             ? "Aprovar orçamento e gerar OS"
             : "Orçamento já aprovado"}
         </button>
+
+        <button
+          type="button"
+          onClick={() => navigate(`/orcamentos/${orcamento.id}/documento`)}
+          style={{
+            padding: "0.6rem 0.9rem",
+            borderRadius: "8px",
+            border: "1px solid #444",
+            backgroundColor: "transparent",
+            color: "#f5f5f5",
+            fontWeight: 500,
+            cursor: "pointer",
+          }}
+        >
+          Documento / Imprimir orçamento
+        </button>
       </section>
 
       {/* Itens */}

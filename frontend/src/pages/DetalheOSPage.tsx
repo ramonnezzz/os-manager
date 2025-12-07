@@ -1,7 +1,11 @@
+// src/pages/DetalheOSPage.tsx
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useOS } from "../context/OSContext";
 import type { CSSProperties } from "react";
+import { useOS } from "../context/OSContext";
+
+
+export type StatusOS = "Aberta" | "Em andamento" | "Concluída" | "Cancelada";
 
 export function DetalheOSPage() {
   const { id } = useParams<{ id: string }>();
@@ -11,8 +15,15 @@ export function DetalheOSPage() {
   const osEncontrada = listaOS.find((item) => item.id === id) ?? null;
 
   const [emEdicao, setEmEdicao] = useState(false);
-  const [dadosEdicao, setDadosEdicao] = useState(() => ({
-    status: osEncontrada?.status ?? "Aberta",
+
+  const [dadosEdicao, setDadosEdicao] = useState<{
+    status: StatusOS;
+    observacoesGerais: string;
+    defeitoRelatado: string;
+    laudoTecnico: string;
+    solucao: string;
+  }>(() => ({
+    status: (osEncontrada?.status as StatusOS) ?? "Aberta",
     observacoesGerais: osEncontrada?.observacoesGerais ?? "",
     defeitoRelatado: osEncontrada?.defeitoRelatado ?? "",
     laudoTecnico: osEncontrada?.laudoTecnico ?? "",
@@ -80,12 +91,12 @@ export function DetalheOSPage() {
     };
   }
 
-  const statusAtual = emEdicao ? dadosEdicao.status : os.status;
+  const statusAtual = emEdicao ? dadosEdicao.status : (os.status as StatusOS);
   const statusStyles = getStatusStyles(statusAtual);
 
   function handleIniciarEdicao() {
     setDadosEdicao({
-      status: os.status,
+      status: (os.status as StatusOS) ?? "Aberta",
       observacoesGerais: os.observacoesGerais ?? "",
       defeitoRelatado: os.defeitoRelatado ?? "",
       laudoTecnico: os.laudoTecnico ?? "",
@@ -180,14 +191,13 @@ export function DetalheOSPage() {
               {data}
             </div>
 
-            {/* Status: badge ou select em modo edição */}
             {emEdicao ? (
               <select
                 value={dadosEdicao.status}
                 onChange={(e) =>
                   setDadosEdicao((ant) => ({
                     ...ant,
-                    status: e.target.value,
+                    status: e.target.value as StatusOS,
                   }))
                 }
                 style={{
