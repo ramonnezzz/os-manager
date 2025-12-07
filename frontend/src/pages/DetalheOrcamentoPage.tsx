@@ -1,9 +1,12 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useOrcamentos } from "../context/OrcamentoContext";
+import { useOS } from "../context/OSContext";
+import type { OrdemServico } from "../types/ordemServico";
 
 export function DetalheOrcamentoPage() {
   const { id } = useParams<{ id: string }>();
-  const { listaOrcamentos } = useOrcamentos();
+  const { listaOrcamentos, atualizarStatusOrcamento } = useOrcamentos();
+  const { adicionarOS } = useOS();
   const navigate = useNavigate();
 
   const orcamento = listaOrcamentos.find((orc) => orc.id === id);
@@ -77,6 +80,41 @@ export function DetalheOrcamentoPage() {
   }
 
   const statusStyles = getStatusStyles(orcamento.status);
+
+  function handleAprovarEGerarOS() {
+    // evita duplicar OS se já estiver aprovado
+    if (orcamento.status === "Aprovado") return;
+
+    const timestamp = Date.now();
+    const ano = new Date().getFullYear();
+    const osId = `os-${timestamp}`;
+
+    const novaOS: OrdemServico = {
+      id: osId,
+      numero: `OS-${ano}-${timestamp}`,
+      cliente: orcamento.cliente,
+      dataAbertura: new Date().toISOString(),
+      status: "Aberta",
+      equipamento: "Não informado",
+      defeitoRelatado: undefined,
+      observacoesGerais: orcamento.observacoes,
+      laudoTecnico: undefined,
+      solucao: undefined,
+      valorMaoDeObra: orcamento.total, // simples por enquanto
+      valorProdutos: 0,
+      desconto: 0,
+      total: orcamento.total,
+      itens: [], // no futuro podemos copiar os itens do orçamento
+    };
+
+    adicionarOS(novaOS);
+    atualizarStatusOrcamento(orcamento.id, "Aprovado");
+
+    // vai direto para a OS gerada
+    navigate(`/os/${osId}`);
+  }
+
+  const podeAprovar = orcamento.status !== "Aprovado";
 
   return (
     <div>
@@ -176,43 +214,32 @@ export function DetalheOrcamentoPage() {
         </div>
       </section>
 
-      {/* Ações (placeholder) */}
+      {/* Ação principal: aprovar e gerar OS */}
       <section
         style={{
           marginTop: "0.75rem",
           display: "flex",
+          flexDirection: "column",
           gap: "0.5rem",
         }}
       >
         <button
           type="button"
-          disabled
+          onClick={handleAprovarEGerarOS}
+          disabled={!podeAprovar}
           style={{
-            flex: 1,
-            padding: "0.55rem 0.9rem",
+            padding: "0.65rem 0.9rem",
             borderRadius: "8px",
-            border: "1px solid #444",
-            backgroundColor: "#222",
-            color: "#888",
-            cursor: "not-allowed",
+            border: "none",
+            backgroundColor: podeAprovar ? "#ff4081" : "#333",
+            color: "#fff",
+            fontWeight: 600,
+            cursor: podeAprovar ? "pointer" : "not-allowed",
           }}
         >
-          Editar (em breve)
-        </button>
-        <button
-          type="button"
-          disabled
-          style={{
-            flex: 1,
-            padding: "0.55rem 0.9rem",
-            borderRadius: "8px",
-            border: "1px solid #444",
-            backgroundColor: "#222",
-            color: "#888",
-            cursor: "not-allowed",
-          }}
-        >
-          Documentos (em breve)
+          {podeAprovar
+            ? "Aprovar orçamento e gerar OS"
+            : "Orçamento já aprovado"}
         </button>
       </section>
 
