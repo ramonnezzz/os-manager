@@ -10,6 +10,7 @@ interface OSContextType {
   listaOS: OrdemServico[];
   adicionarOS: (novaOS: OrdemServico) => void;
   atualizarStatusOS: (id: string, status: StatusOS) => void;
+  atualizarOS: (id: string, dados: Partial<OrdemServico>) => void;
 }
 
 const OSContext = createContext<OSContextType | undefined>(undefined);
@@ -36,9 +37,22 @@ export function OSProvider({ children }: OSProviderProps) {
     );
   }
 
+  function atualizarOS(id: string, dados: Partial<OrdemServico>) {
+  setListaOS((anteriores) =>
+    anteriores.map((os) =>
+      os.id === id ? { ...os, ...dados } : os
+    )
+  );
+}
+
   return (
     <OSContext.Provider
-      value={{ listaOS, adicionarOS, atualizarStatusOS }}
+      value={{
+        listaOS,
+        adicionarOS,
+        atualizarStatusOS,
+        atualizarOS,
+      }}
     >
       {children}
     </OSContext.Provider>
