@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useOrcamentos } from "../context/OrcamentoContext";
 
 export function ListaOrcamentosPage() {
@@ -34,8 +35,7 @@ export function ListaOrcamentosPage() {
       return dataB - dataA; // mais recente primeiro
     });
 
-  function getStatusStyles(status: string): React.CSSProperties {
-    // simples: ajusta cores por palavra
+  function getStatusStyles(status: string) {
     const lower = status.toLowerCase();
 
     if (lower.includes("aprov")) {
@@ -195,98 +195,106 @@ export function ListaOrcamentosPage() {
                 <li
                   key={orc.id}
                   style={{
-                    padding: "0.75rem 0.9rem",
                     borderRadius: "10px",
                     border: "1px solid #333",
                     backgroundColor: "#181818",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    gap: "0.75rem",
                   }}
                 >
-                  <div
+                  <Link
+                    to={`/orcamentos/${orc.id}`}
                     style={{
                       display: "flex",
-                      flexDirection: "column",
-                      gap: "0.2rem",
-                      minWidth: 0,
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                      padding: "0.75rem 0.9rem",
+                      textDecoration: "none",
+                      color: "inherit",
                     }}
                   >
-                    {/* Número do orçamento */}
-                    <span
+                    <div
                       style={{
-                        fontWeight: 600,
-                        fontSize: "0.95rem",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.2rem",
+                        minWidth: 0,
                       }}
                     >
-                      {orc.numero}
-                    </span>
+                      {/* Número do orçamento */}
+                      <span
+                        style={{
+                          fontWeight: 600,
+                          fontSize: "0.95rem",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {orc.numero}
+                      </span>
 
-                    {/* Cliente */}
-                    <span
-                      style={{
-                        fontSize: "0.9rem",
-                        opacity: 0.9,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {orc.cliente.nome}
-                    </span>
+                      {/* Cliente */}
+                      <span
+                        style={{
+                          fontSize: "0.9rem",
+                          opacity: 0.9,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {orc.cliente.nome}
+                      </span>
 
-                    {/* Data de emissão */}
-                    <span
-                      style={{
-                        fontSize: "0.8rem",
-                        opacity: 0.7,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {new Date(orc.dataEmissao).toLocaleDateString("pt-BR")}
-                    </span>
-                  </div>
+                      {/* Data de emissão */}
+                      <span
+                        style={{
+                          fontSize: "0.8rem",
+                          opacity: 0.7,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {new Date(orc.dataEmissao).toLocaleDateString("pt-BR")}
+                      </span>
+                    </div>
 
-                  <div
-                    style={{
-                      textAlign: "right",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "0.25rem",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {/* Total */}
-                    <span
+                    <div
                       style={{
-                        fontWeight: 600,
-                        fontSize: "0.95rem",
+                        textAlign: "right",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.25rem",
+                        flexShrink: 0,
                       }}
                     >
-                      R$ {orc.total.toFixed(2)}
-                    </span>
+                      {/* Total */}
+                      <span
+                        style={{
+                          fontWeight: 600,
+                          fontSize: "0.95rem",
+                        }}
+                      >
+                        R$ {orc.total.toFixed(2)}
+                      </span>
 
-                    {/* Tag de status */}
-                    <span
-                      style={{
-                        fontSize: "0.75rem",
-                        padding: "0.15rem 0.6rem",
-                        borderRadius: "999px",
-                        borderWidth: "1px",
-                        borderStyle: "solid",
-                        textTransform: "capitalize",
-                        ...statusStyles,
-                      }}
-                    >
-                      {orc.status}
-                    </span>
-                  </div>
+                      {/* Tag de status */}
+                      <span
+                        style={{
+                          fontSize: "0.75rem",
+                          padding: "0.15rem 0.6rem",
+                          borderRadius: "999px",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          textTransform: "capitalize",
+                          ...statusStyles,
+                        }}
+                      >
+                        {orc.status}
+                      </span>
+                    </div>
+                  </Link>
                 </li>
               );
             })}

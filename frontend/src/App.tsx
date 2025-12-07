@@ -7,6 +7,8 @@ import { ListaOSPage } from "./pages/ListaOSPage";
 import { ListaOrcamentosPage } from "./pages/ListaOrcamentosPage";
 import { ListaClientesPage } from "./pages/ListaClientesPage";
 import { DetalheOSPage } from "./pages/DetalheOSPage";
+import { DetalheOrcamentoPage } from "./pages/DetalheOrcamentoPage";
+
 
 function App() {
   return (
@@ -18,10 +20,12 @@ function App() {
           <Route path="/nova-os" element={<NovaOSPage />} />
           <Route path="/novo-orcamento" element={<NovoOrcamentoPage />} />
           <Route path="/os" element={<ListaOSPage />} />
-          <Route path="/os/:id" element={<DetalheOSPage />} /> {/* nova rota */}
+          <Route path="/os/:id" element={<DetalheOSPage />} />
           <Route path="/orcamentos" element={<ListaOrcamentosPage />} />
+          <Route path="/orcamentos/:id" element={<DetalheOrcamentoPage />} /> {/* nova */}
           <Route path="/clientes" element={<ListaClientesPage />} />
         </Routes>
+
 
       </main>
     </BrowserRouter>
