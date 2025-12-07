@@ -1,9 +1,11 @@
 import { useParams } from "react-router-dom";
 import { useOS } from "../context/OSContext";
+import { useEmpresa } from "../context/EmpresaContext";
 
 export function DocumentoOSPage() {
   const { id } = useParams<{ id: string }>();
   const { listaOS } = useOS();
+  const { dados: empresa } = useEmpresa();
 
   const os = listaOS.find((item) => item.id === id) ?? null;
 
@@ -75,8 +77,21 @@ export function DocumentoOSPage() {
                 fontSize: "0.9rem",
               }}
             >
-              S. Ramon Serviços em Tecnologia da Informação
+              {empresa.nomeFantasia}
+              {empresa.documento && ` · ${empresa.documento}`}
             </p>
+            {(empresa.telefone || empresa.endereco || empresa.cidade) && (
+              <p
+                style={{
+                  margin: "0.15rem 0 0",
+                  fontSize: "0.8rem",
+                }}
+              >
+                {empresa.telefone && <>Tel: {empresa.telefone} </>}
+                {empresa.endereco && <>· {empresa.endereco} </>}
+                {empresa.cidade && <>· {empresa.cidade}</>}
+              </p>
+            )}
           </div>
 
           <div
@@ -124,7 +139,7 @@ export function DocumentoOSPage() {
               <div>
                 <strong>Cliente:</strong> {os.cliente.nome}
               </div>
-              {os.cliente.telefone && (
+              {"telefone" in os.cliente && os.cliente.telefone && (
                 <div>
                   <strong>Telefone:</strong> {os.cliente.telefone}
                 </div>
@@ -173,7 +188,7 @@ export function DocumentoOSPage() {
           </div>
         </section>
 
-        {/* Campos de texto (observações / defeito / laudo / solução) */}
+        {/* Campos de texto */}
         <section
           style={{
             fontSize: "0.9rem",

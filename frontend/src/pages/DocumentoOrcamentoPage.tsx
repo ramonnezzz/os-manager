@@ -1,9 +1,12 @@
+// src/pages/DocumentoOrcamentoPage.tsx
 import { useNavigate, useParams } from "react-router-dom";
 import { useOrcamentos } from "../context/OrcamentoContext";
+import { useEmpresa } from "../context/EmpresaContext";
 
 export function DocumentoOrcamentoPage() {
   const { id } = useParams<{ id: string }>();
   const { listaOrcamentos } = useOrcamentos();
+  const { dados: empresa } = useEmpresa();
   const navigate = useNavigate();
 
   const orcamento = listaOrcamentos.find((orc) => orc.id === id);
@@ -43,7 +46,7 @@ export function DocumentoOrcamentoPage() {
       style={{
         fontFamily:
           "system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#111",
         color: "#111",
         minHeight: "100vh",
         padding: "1.5rem 1rem",
@@ -60,7 +63,7 @@ export function DocumentoOrcamentoPage() {
           boxShadow: "0 0 10px rgba(0,0,0,0.08)",
         }}
       >
-        {/* barra de ações (não deve aparecer na impressão) */}
+        {/* barra de ações */}
         <div
           className="no-print"
           style={{
@@ -119,7 +122,7 @@ export function DocumentoOrcamentoPage() {
                 margin: 0,
               }}
             >
-              S. Ramon Serviços em Tecnologia da Informação
+              {empresa.nomeFantasia}
             </h1>
             <p
               style={{
@@ -127,11 +130,10 @@ export function DocumentoOrcamentoPage() {
                 fontSize: "0.85rem",
               }}
             >
-              CNPJ/CPF: (preencher depois)
-              <br />
-              Telefone: (preencher)
-              <br />
-              Endereço: (preencher)
+              {empresa.documento && <>CNPJ/CPF: {empresa.documento} <br /></>}
+              {empresa.telefone && <>Telefone: {empresa.telefone} <br /></>}
+              {empresa.endereco && <>Endereço: {empresa.endereco} <br /></>}
+              {empresa.cidade && <>Cidade: {empresa.cidade}</>}
             </p>
           </div>
 
@@ -172,24 +174,25 @@ export function DocumentoOrcamentoPage() {
           <p style={{ margin: 0 }}>
             <strong>Nome:</strong> {orcamento.cliente.nome}
             <br />
-            {/* estes campos podem não existir, então tratamos como opcionais */}
-            {orcamento.cliente.cpfCnpj ? (
-              <>
-                <strong>CPF/CNPJ:</strong> {orcamento.cliente.cpfCnpj}
-                <br />
-              </>
-            ) : null}
-            {orcamento.cliente.telefone ? (
-              <>
-                <strong>Telefone:</strong> {orcamento.cliente.telefone}
-                <br />
-              </>
-            ) : null}
-            {orcamento.cliente.cidade ? (
+            {"cpfCnpj" in orcamento.cliente &&
+              orcamento.cliente.cpfCnpj && (
+                <>
+                  <strong>CPF/CNPJ:</strong> {orcamento.cliente.cpfCnpj}
+                  <br />
+                </>
+              )}
+            {"telefone" in orcamento.cliente &&
+              orcamento.cliente.telefone && (
+                <>
+                  <strong>Telefone:</strong> {orcamento.cliente.telefone}
+                  <br />
+                </>
+              )}
+            {"cidade" in orcamento.cliente && orcamento.cliente.cidade && (
               <>
                 <strong>Cidade:</strong> {orcamento.cliente.cidade}
               </>
-            ) : null}
+            )}
           </p>
         </section>
 

@@ -11,11 +11,11 @@ import { DetalheOSPage } from "./pages/DetalheOSPage";
 import { DetalheOrcamentoPage } from "./pages/DetalheOrcamentoPage";
 import { DocumentoOrcamentoPage } from "./pages/DocumentoOrcamentoPage";
 import { DocumentoOSPage } from "./pages/DocumentoOSPage";
+import { ConfiguracoesEmpresaPage } from "./pages/ConfiguracoesEmpresaPage";
 
 function App() {
   const location = useLocation();
 
-  // Qualquer rota que contenha /documento não mostra o menu
   const isDocumentoRoute = location.pathname.includes("/documento");
 
   return (
@@ -26,7 +26,6 @@ function App() {
         color: "#f5f5f5",
       }}
     >
-      {/* Navbar visível só fora do modo documento */}
       {!isDocumentoRoute && (
         <header
           className="app-shell-nav"
@@ -62,6 +61,9 @@ function App() {
             <Link style={linkStyle} to="/clientes">
               Clientes
             </Link>
+            <Link style={linkStyle} to="/configuracoes">
+              Configurações
+            </Link>
           </nav>
         </header>
       )}
@@ -94,6 +96,9 @@ function App() {
 
           {/* Clientes */}
           <Route path="/clientes" element={<ListaClientesPage />} />
+
+          {/* Configurações da Empresa */}
+          <Route path="/configuracoes" element={<ConfiguracoesEmpresaPage />} />
         </Routes>
       </main>
     </div>

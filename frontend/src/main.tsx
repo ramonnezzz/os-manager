@@ -1,25 +1,26 @@
-// src/main.tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
 import "./index.css";
 
-// Providers dos contextos
+import { EmpresaProvider } from "./context/EmpresaContext";
+import { ClienteProvider } from "./context/ClienteContext";
 import { OSProvider } from "./context/OSContext";
 import { OrcamentoProvider } from "./context/OrcamentoContext";
-import { ClienteProvider } from "./context/ClienteContext";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
-      <ClienteProvider>
-        <OSProvider>
-          <OrcamentoProvider>
-            <App />
-          </OrcamentoProvider>
-        </OSProvider>
-      </ClienteProvider>
+      <EmpresaProvider>
+        <ClienteProvider>
+          <OSProvider>
+            <OrcamentoProvider>
+              <App />
+            </OrcamentoProvider>
+          </OSProvider>
+        </ClienteProvider>
+      </EmpresaProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
