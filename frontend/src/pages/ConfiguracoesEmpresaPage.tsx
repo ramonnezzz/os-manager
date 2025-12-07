@@ -11,6 +11,7 @@ export function ConfiguracoesEmpresaPage() {
     endereco: dados.endereco,
     cidade: dados.cidade,
     email: dados.email,
+    chavePix: dados.chavePix,
   });
 
   const [mensagem, setMensagem] = useState<string | null>(null);
@@ -89,6 +90,12 @@ export function ConfiguracoesEmpresaPage() {
           type="email"
           value={form.email}
           onChange={(valor) => setForm((f) => ({ ...f, email: valor }))}
+        />
+
+        <CampoTexto
+          label="Chave Pix (e-mail, CPF, CNPJ ou aleatória)"
+          value={form.chavePix}
+          onChange={(valor) => setForm((f) => ({ ...f, chavePix: valor }))}
         />
 
         <button

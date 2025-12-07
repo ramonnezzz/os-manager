@@ -13,6 +13,7 @@ export interface EmpresaDados {
   endereco: string;
   cidade: string;
   email: string;
+  chavePix: string; // NOVO
 }
 
 interface EmpresaContextValue {
@@ -29,6 +30,7 @@ const DEFAULT_DADOS: EmpresaDados = {
   endereco: "",
   cidade: "",
   email: "",
+  chavePix: "",
 };
 
 const EmpresaContext = createContext<EmpresaContextValue | undefined>(

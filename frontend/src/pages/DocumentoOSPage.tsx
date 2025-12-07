@@ -1,13 +1,31 @@
-import { useParams } from "react-router-dom";
+// src/pages/DocumentoOSPage.tsx
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useOS } from "../context/OSContext";
 import { useEmpresa } from "../context/EmpresaContext";
+import { PixQrCodeOS } from "../components/PixQrCodeOS";
 
 export function DocumentoOSPage() {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+
   const { listaOS } = useOS();
   const { dados: empresa } = useEmpresa();
 
   const os = listaOS.find((item) => item.id === id) ?? null;
+
+  useEffect(() => {
+    // rola pro topo ao abrir o documento
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  function handleVoltar() {
+    navigate(-1);
+  }
+
+  function handleImprimir() {
+    window.print();
+  }
 
   if (!os) {
     return (
@@ -21,12 +39,12 @@ export function DocumentoOSPage() {
           color: "#f5f5f5",
         }}
       >
-        <p>OS não encontrada.</p>
+        <p>Ordem de Serviço não encontrada.</p>
       </div>
     );
   }
 
-  const data = new Date(os.dataAbertura).toLocaleDateString("pt-BR");
+  const dataAbertura = new Date(os.dataAbertura).toLocaleDateString("pt-BR");
 
   return (
     <div
@@ -35,33 +53,72 @@ export function DocumentoOSPage() {
         backgroundColor: "#111",
         display: "flex",
         justifyContent: "center",
-        alignItems: "flex-start",
         padding: "1.5rem 0",
       }}
     >
-      {/* IMPORTANTE: className="print-page" aqui também */}
       <div
-        className="print-page"
         style={{
           width: "100%",
           maxWidth: "800px",
           backgroundColor: "#ffffff",
           color: "#000000",
-          padding: "2rem",
-          boxShadow: "0 0 12px rgba(0, 0, 0, 0.5)",
+          padding: "1.5rem 1.75rem 2.5rem",
+          boxShadow: "0 0 12px rgba(0, 0, 0, 0.6)",
           fontFamily:
             "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
         }}
       >
+        {/* Barra de ações – esconder via CSS @media print (.print-hide) */}
+        <div
+          className="print-hide"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: "1rem",
+          }}
+        >
+          <button
+            type="button"
+            onClick={handleVoltar}
+            style={{
+              padding: "0.4rem 0.9rem",
+              borderRadius: "6px",
+              border: "1px solid #ddd",
+              backgroundColor: "#f5f5f5",
+              cursor: "pointer",
+              fontSize: "0.9rem",
+            }}
+          >
+            ← Voltar
+          </button>
+
+          <button
+            type="button"
+            onClick={handleImprimir}
+            style={{
+              padding: "0.4rem 0.9rem",
+              borderRadius: "6px",
+              border: "1px solid #0d6efd",
+              backgroundColor: "#0d6efd",
+              color: "#ffffff",
+              cursor: "pointer",
+              fontSize: "0.9rem",
+            }}
+          >
+            Imprimir
+          </button>
+        </div>
+
         {/* Cabeçalho do documento */}
         <header
           style={{
             display: "flex",
             justifyContent: "space-between",
-            marginBottom: "1.5rem",
-            borderBottom: "2px solid #000",
-            paddingBottom: "0.75rem",
+            alignItems: "flex-start",
             gap: "1rem",
+            paddingBottom: "0.75rem",
+            borderBottom: "2px solid #000",
+            marginBottom: "1.25rem",
           }}
         >
           <div>
@@ -75,23 +132,26 @@ export function DocumentoOSPage() {
             </h1>
             <p
               style={{
-                margin: "0.25rem 0 0",
+                margin: "0.3rem 0 0",
                 fontSize: "0.9rem",
               }}
             >
-              {empresa.nomeFantasia}
-              {empresa.documento && ` · ${empresa.documento}`}
+              {empresa.nomeFantasia || "S. Ramon Serviços em Tecnologia da Informação"}
             </p>
-            {(empresa.telefone || empresa.endereco || empresa.cidade) && (
+            {(empresa.documento ||
+              empresa.telefone ||
+              empresa.endereco ||
+              empresa.cidade) && (
               <p
                 style={{
                   margin: "0.15rem 0 0",
                   fontSize: "0.8rem",
                 }}
               >
-                {empresa.telefone && <>Tel: {empresa.telefone} </>}
-                {empresa.endereco && <>· {empresa.endereco} </>}
-                {empresa.cidade && <>· {empresa.cidade}</>}
+                {empresa.documento && <>Doc: {empresa.documento} · </>}
+                {empresa.telefone && <>Tel: {empresa.telefone} · </>}
+                {empresa.endereco && <>{empresa.endereco} · </>}
+                {empresa.cidade && <>{empresa.cidade}</>}
               </p>
             )}
           </div>
@@ -103,10 +163,10 @@ export function DocumentoOSPage() {
             }}
           >
             <div>
-              <strong>Nº:</strong> {os.numero}
+              <strong>OS:</strong> {os.numero}
             </div>
             <div>
-              <strong>Data:</strong> {data}
+              <strong>Data:</strong> {dataAbertura}
             </div>
             <div>
               <strong>Status:</strong> {os.status}
@@ -124,7 +184,7 @@ export function DocumentoOSPage() {
           <h2
             style={{
               fontSize: "1rem",
-              margin: "0 0 0.5rem",
+              margin: "0 0 0.4rem",
             }}
           >
             Dados do Cliente
@@ -139,7 +199,7 @@ export function DocumentoOSPage() {
           >
             <div>
               <div>
-                <strong>Cliente:</strong> {os.cliente.nome}
+                <strong>Nome:</strong> {os.cliente?.nome ?? "-"}
               </div>
               {"telefone" in os.cliente && os.cliente.telefone && (
                 <div>
@@ -156,7 +216,7 @@ export function DocumentoOSPage() {
           </div>
         </section>
 
-        {/* Valores */}
+        {/* Valores / resumo financeiro */}
         <section
           style={{
             marginBottom: "1.25rem",
@@ -166,7 +226,7 @@ export function DocumentoOSPage() {
           <h2
             style={{
               fontSize: "1rem",
-              margin: "0 0 0.5rem",
+              margin: "0 0 0.4rem",
             }}
           >
             Valores
@@ -174,11 +234,11 @@ export function DocumentoOSPage() {
 
           <div
             style={{
+              border: "1px solid #000",
+              borderRadius: "4px",
+              padding: "0.5rem 0.75rem",
               display: "flex",
               justifyContent: "space-between",
-              border: "1px solid #000",
-              padding: "0.5rem 0.75rem",
-              borderRadius: "4px",
             }}
           >
             <span>
@@ -190,13 +250,17 @@ export function DocumentoOSPage() {
           </div>
         </section>
 
-        {/* Campos de texto */}
+        {/* QRCode PIX para pagamento da OS */}
+        <PixQrCodeOS numeroOS={os.numero} total={os.total} />
+
+        {/* Campos de texto / laudos */}
         <section
           style={{
-            fontSize: "0.9rem",
+            marginTop: "1.75rem",
             display: "flex",
             flexDirection: "column",
-            gap: "0.9rem",
+            gap: "1rem",
+            fontSize: "0.9rem",
           }}
         >
           <BlocoTexto
@@ -207,26 +271,24 @@ export function DocumentoOSPage() {
             titulo="Defeito Relatado"
             conteudo={os.defeitoRelatado}
           />
-          <BlocoTexto titulo="Laudo Técnico" conteudo={os.laudoTecnico} />
+          <BlocoTexto
+            titulo="Laudo Técnico"
+            conteudo={os.laudoTecnico}
+          />
           <BlocoTexto titulo="Solução" conteudo={os.solucao} />
         </section>
 
         {/* Assinaturas */}
         <section
           style={{
-            marginTop: "2rem",
+            marginTop: "2.25rem",
             display: "flex",
             justifyContent: "space-between",
             gap: "2rem",
             fontSize: "0.9rem",
           }}
         >
-          <div
-            style={{
-              flex: 1,
-              textAlign: "center",
-            }}
-          >
+          <div style={{ flex: 1, textAlign: "center" }}>
             <div
               style={{
                 borderTop: "1px solid #000",
@@ -236,12 +298,7 @@ export function DocumentoOSPage() {
             <div>Assinatura do Técnico</div>
           </div>
 
-          <div
-            style={{
-              flex: 1,
-              textAlign: "center",
-            }}
-          >
+          <div style={{ flex: 1, textAlign: "center" }}>
             <div
               style={{
                 borderTop: "1px solid #000",
@@ -262,7 +319,7 @@ interface BlocoTextoProps {
 }
 
 function BlocoTexto({ titulo, conteudo }: BlocoTextoProps) {
-  const vazio = !conteudo;
+  const vazio = !conteudo || conteudo.trim().length === 0;
 
   return (
     <div>
@@ -283,7 +340,7 @@ function BlocoTexto({ titulo, conteudo }: BlocoTextoProps) {
           whiteSpace: "pre-wrap",
         }}
       >
-        {vazio ? <span style={{ opacity: 0.6 }}>—</span> : conteudo}
+        {vazio ? <span style={{ opacity: 0.5 }}>—</span> : conteudo}
       </div>
     </div>
   );

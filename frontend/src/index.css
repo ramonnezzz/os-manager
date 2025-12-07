@@ -107,3 +107,8 @@ p {
     border-radius: 0 !important;
   }
 }
+@media print {
+  .print-hide {
+    display: none !important;
+  }
+}
