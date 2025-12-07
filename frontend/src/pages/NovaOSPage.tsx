@@ -1,33 +1,48 @@
-// src/pages/NovaOSPage.ts
-import type { FormEvent } from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import type { FormEvent } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { useOS } from "../context/OSContext";
-import type { Cliente } from "../types/cliente";
+import { useClientes } from "../context/ClienteContext";
 import type { OrdemServico } from "../types/ordemServico";
 
 export function NovaOSPage() {
   const { adicionarOS } = useOS();
+  const { listaClientes } = useClientes();
   const navigate = useNavigate();
 
-  const [nomeCliente, setNomeCliente] = useState("");
-  const [telefoneCliente, setTelefoneCliente] = useState("");
+  const [clienteIdSelecionado, setClienteIdSelecionado] = useState("");
   const [equipamento, setEquipamento] = useState("");
   const [defeitoRelatado, setDefeitoRelatado] = useState("");
   const [valorMaoDeObra, setValorMaoDeObra] = useState("");
   const [erro, setErro] = useState<string | null>(null);
 
+  const semClientes = listaClientes.length === 0;
+
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setErro(null);
 
-    if (!nomeCliente.trim()) {
-      setErro("Informe o nome do cliente.");
+    if (semClientes) {
+      setErro("Cadastre ao menos um cliente antes de criar uma OS.");
+      return;
+    }
+
+    if (!clienteIdSelecionado) {
+      setErro("Selecione um cliente.");
       return;
     }
 
     if (!equipamento.trim()) {
       setErro("Informe o equipamento.");
+      return;
+    }
+
+    const cliente = listaClientes.find(
+      (cli) => cli.id === clienteIdSelecionado
+    );
+
+    if (!cliente) {
+      setErro("Cliente selecionado não encontrado.");
       return;
     }
 
@@ -37,21 +52,12 @@ export function NovaOSPage() {
 
     const timestamp = Date.now();
     const ano = new Date().getFullYear();
-
-    const clienteId = `cli-${timestamp}`;
     const osId = `os-${timestamp}`;
-
-    const cliente: Cliente = {
-      id: clienteId,
-      nome: nomeCliente.trim(),
-      tipoPessoa: "PF",
-      telefone: telefoneCliente.trim() || undefined,
-    };
 
     const novaOS: OrdemServico = {
       id: osId,
       numero: `OS-${ano}-${timestamp}`,
-      cliente,
+      cliente, // usa o cliente cadastrado
       dataAbertura: new Date().toISOString(),
       status: "Aberta",
       equipamento: equipamento.trim(),
@@ -66,8 +72,7 @@ export function NovaOSPage() {
     adicionarOS(novaOS);
 
     // limpa o formulário
-    setNomeCliente("");
-    setTelefoneCliente("");
+    setClienteIdSelecionado("");
     setEquipamento("");
     setDefeitoRelatado("");
     setValorMaoDeObra("");
@@ -76,10 +81,28 @@ export function NovaOSPage() {
     navigate("/os");
   }
 
+  if (semClientes) {
+    return (
+      <div>
+        <h1>Nova Ordem de Serviço</h1>
+        <p style={{ marginTop: "1rem" }}>
+          Você ainda não possui clientes cadastrados.
+        </p>
+        <p style={{ marginTop: "0.5rem" }}>
+          Vá até a página{" "}
+          <Link to="/clientes" style={{ color: "#4e8cff" }}>
+            Clientes
+          </Link>{" "}
+          para cadastrar ao menos um cliente antes de criar uma OS.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1>Nova Ordem de Serviço</h1>
-      <p>Cadastre uma nova OS preenchendo os dados abaixo.</p>
+      <p>Selecione um cliente cadastrado e preencha os dados da OS.</p>
 
       <form
         onSubmit={handleSubmit}
@@ -105,14 +128,14 @@ export function NovaOSPage() {
           </div>
         )}
 
+        {/* Seleção de cliente */}
         <div>
           <label style={{ display: "block", marginBottom: "0.25rem" }}>
-            Nome do cliente *
+            Cliente *
           </label>
-          <input
-            type="text"
-            value={nomeCliente}
-            onChange={(e) => setNomeCliente(e.target.value)}
+          <select
+            value={clienteIdSelecionado}
+            onChange={(e) => setClienteIdSelecionado(e.target.value)}
             required
             style={{
               width: "100%",
@@ -122,28 +145,17 @@ export function NovaOSPage() {
               backgroundColor: "#181818",
               color: "#f5f5f5",
             }}
-          />
+          >
+            <option value="">Selecione um cliente</option>
+            {listaClientes.map((cli) => (
+              <option key={cli.id} value={cli.id}>
+                {cli.nome} {cli.cidade ? `- ${cli.cidade}` : ""}
+              </option>
+            ))}
+          </select>
         </div>
 
-        <div>
-          <label style={{ display: "block", marginBottom: "0.25rem" }}>
-            Telefone do cliente
-          </label>
-          <input
-            type="tel"
-            value={telefoneCliente}
-            onChange={(e) => setTelefoneCliente(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "0.5rem 0.75rem",
-              borderRadius: "4px",
-              border: "1px solid #333",
-              backgroundColor: "#181818",
-              color: "#f5f5f5",
-            }}
-          />
-        </div>
-
+        {/* Equipamento */}
         <div>
           <label style={{ display: "block", marginBottom: "0.25rem" }}>
             Equipamento *
@@ -165,6 +177,7 @@ export function NovaOSPage() {
           />
         </div>
 
+        {/* Defeito relatado */}
         <div>
           <label style={{ display: "block", marginBottom: "0.25rem" }}>
             Defeito relatado
@@ -185,6 +198,7 @@ export function NovaOSPage() {
           />
         </div>
 
+        {/* Valor da mão de obra */}
         <div>
           <label style={{ display: "block", marginBottom: "0.25rem" }}>
             Valor da mão de obra (R$)
